@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title>Intelligent Contract Platform</title>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="Intelligent Contract Platform">
+    <meta name="keywords" content="Intelligent Contract Platform,Intelligent Contract">
+    <link rel="shortcut icon" href="../public/assets/img/favicon.png" type="image/x-icon">
+    <link rel="stylesheet" href="./css/style.css">
+    <link rel="stylesheet" href="./css/prism.css">
+    <!-- Prism.js for syntax highlighting -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-solidity.min.js"></script>
+</head>
+<body>
+    <header id="home">
+        <div class="container">
+            <nav class="navbar">
+                <div class="">
+                    <a class="" href="#" style="font-size: 30px">
+                        Intelligent Contract	
+                    </a>
+                </div>
+
+                <div class="navbar-collapse">
+                    <ul class="nav">
+                        <li class="dropdown" id="user-info" style="display: none;">
+                            <div class="user_name" style="display: block;" href="">Login User Information
+                                <div class="user_address">
+                                    <p style="border-bottom: 1px solid #666666;">Address: <b id="user-address"></b></p>
+                                    <p style="cursor: pointer;"><a href="#" id="logout-btn">Logout</a></p>
+                                </div>
+                            </div>
+                        </li>
+                        <li class="dropdown" id="login-btn-container" style="display: block;">
+                            <div class="user_name" id="auth-metamask" style="display: block;" href="">Login</div>
+                        </li>
+                    </ul>
+                </div>
+            </nav>
+        </div>
+    </header>
+    
+    <div id="NewsToolBox"></div>
+    
+    <div class="contract-form">
+        <div class="container">
+            <div class="generate-contract">
+                <div class="generate">
+                    <div class="input-requirements">
+                        <h5 class="generate-h5">Please enter the requirements of the contract</h5>
+                        <form>
+                            <div>
+                                <div class="">
+                                    <textarea id="message" rows="10" placeholder="Please enter the requirements of the contract" required></textarea>
+                                </div>
+                            </div>
+                            <div id="generate-btn" style="padding-left: 50px;" class="submit-btn">Generate</div>
+                        </form>
+                    </div>
+
+                    <div class="contract-code">
+                        <h5 class="generate-h5">Contract Code</h5>
+                        <div>
+                            <div id="textToCopy">
+                                <pre class='line-numbers' style="height: 400px"><code class='language-solidity' id='copyText1'></code></pre>
+                            </div>
+                            <br>
+                            <button onclick="copyToClipboard('copyText1')" class="submit-btn">Deploy to Remix</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="generate-description">
+                <div class="generate">
+                    <h5 class="generate-h5">Tool Introduction</h5>
+                    <p>Tool introduction document</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="contract-list">
+        <div class="container">
+            <div class="contract-list-a">
+                <div class="generate-list">
+                    <div class="history">
+                        <div>
+                            <div class="col-md-8">
+                                <div id="pagination" class="samplePage pagination"></div>
+                            </div>
+                            <div class="jump">
+                                <input type="text" class="form-control" id="page-input" />
+                                <a class="btn" id="go-page-btn">Go</a>
+                            </div>
+                            <div class="form-inline">
+                                <div class="form-group">
+                                    <div class="pull-right">
+                                        <label>Selected Limit:
+                                            <select class="form-control" id="page-limit">
+                                                <option value="5">5</option>
+                                                <option value="10">10</option>
+                                                <option value="20">20</option>
+                                                <option value="50">50</option>
+                                            </select>
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="panel">
+                            <table class="table">
+                                <thead>
+                                    <tr>
+                                        <td class="contract-list-xh1">No.</td>
+                                        <td class="contract-list-lb1">Query</td>
+                                    </tr>
+                                </thead>
+                                <tbody id="history-table-body">
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="list-description">
+                    <div class="history">
+                        <h5 class="generate-h5">Contract Code</h5>
+                        <div>
+                            <div id="textToCopy-1">
+                                <pre class='line-numbers' style="height: 400px"><code class='language-solidity' id='copyText2'></code></pre>
+                            </div>
+                            <br>
+                            <button onclick="copyToClipboard('copyText2')" class="submit-btn">Deploy to Remix</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="loadingDiv" style="background-color:rgba(0,0,0,0.3); display: none;position:fixed;top:0;right:0;bottom:0;left:0;z-index:1000;">
+        <span class="loadingImg" style='width: 100px;height: 100px;margin: auto;position:absolute;top:0;right:0;bottom:60px;left:0;background:center center no-repeat;background-size:contain;'></span>
+    </div>
+
+    <footer>
+        <div class="container">
+            <div class="footer-bottom">
+                <p>&copy; 2023 <a>MATRIX</a>. All Rights Reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Load JavaScript modules -->
+    <script type="module" src="./js/main.js"></script>
+</body>
+</html>

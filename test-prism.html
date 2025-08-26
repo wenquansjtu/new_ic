@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Prism.js Test</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-solidity.min.js"></script>
+</head>
+<body>
+    <h1>Prism.js Syntax Highlighting Test</h1>
+    
+    <h2>Solidity Code:</h2>
+    <pre class="line-numbers"><code class="language-solidity">
+// SPDX-License-Identifier: MIT
+pragma solidity ^0.8.19;
+
+contract TestContract {
+    address public owner;
+    uint256 public value;
+    
+    constructor() {
+        owner = msg.sender;
+        value = 100;
+    }
+    
+    function setValue(uint256 _value) public {
+        require(msg.sender == owner, "Only owner can set value");
+        value = _value;
+    }
+}
+    </code></pre>
+    
+    <script>
+        // Test if Prism is loaded
+        if (typeof window.Prism !== 'undefined') {
+            console.log('✅ Prism.js loaded successfully');
+            Prism.highlightAll();
+        } else {
+            console.log('❌ Prism.js not loaded');
+        }
+    </script>
+</body>
+</html>

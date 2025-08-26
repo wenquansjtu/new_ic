@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Intelligent Contract Profile Page</title>
+    <link rel="stylesheet" href="./css/style.css">
+</head>
+<body>
+    <div class="container" style="margin-top: 50px;">
+        <div id="authenticated-content" style="display: none;">
+            <h1>Eth address: <span id="profile-address"></span></h1>
+            <h3>Session auth info</h3>
+            <table width="400px" border="1px" style="border-collapse: collapse; margin-bottom: 20px;">
+                <tbody id="auth-info-table">
+                </tbody>
+            </table>
+            
+            <h3>Verified user info</h3>
+            <table width="400px" border="1px" style="border-collapse: collapse; margin-bottom: 20px;">
+                <tbody id="verified-info-table">
+                </tbody>
+            </table>
+            
+            <br/>
+            <a href="#" id="profile-logout" style="padding: 10px 20px; background: #514f7f; color: white; text-decoration: none; border-radius: 5px;">Logout</a>
+        </div>
+
+        <div id="unauthenticated-content">
+            <h2>Please login first</h2>
+            <a href="./index.html" style="padding: 10px 20px; background: #514f7f; color: white; text-decoration: none; border-radius: 5px;">Go to Login Page</a>
+        </div>
+    </div>
+
+    <script type="module" src="./js/profile.js"></script>
+</body>
+</html>
