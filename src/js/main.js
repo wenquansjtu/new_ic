@@ -19,9 +19,21 @@ class IntelligentContractApp {
         this.bindEvents();
         this.setupHistory();
         this.setupPagination();
+        this.updateCopyright();
         
         // Make copyToClipboard globally available
         window.copyToClipboard = copyToClipboard;
+    }
+
+    // Update copyright based on domain
+    updateCopyright() {
+        const currentDomain = window.location.hostname;
+        console.log('Current domain:', currentDomain);
+        const footerCopyright = document.querySelector('footer .footer-bottom p');
+        
+        if (footerCopyright && currentDomain === 'demo.xlex.ai') {
+            footerCopyright.innerHTML = '&copy; 2025 <a>XLex</a>. All Rights Reserved.';
+        }
     }
 
     // Update UI based on authentication status

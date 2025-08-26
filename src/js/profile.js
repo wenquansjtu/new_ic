@@ -17,6 +17,18 @@ class ProfilePage {
         }
         
         this.bindEvents();
+        this.updateCopyright();
+    }
+
+    // Update copyright based on domain
+    updateCopyright() {
+        const currentDomain = window.location.hostname;
+        console.log('Current domain:', currentDomain);
+        const footerCopyright = document.querySelector('footer .footer-bottom p');
+        
+        if (footerCopyright && currentDomain === 'demo.xlex.ai') {
+            footerCopyright.innerHTML = '&copy; 2025 <a>XLex</a>. All Rights Reserved.';
+        }
     }
 
     showAuthenticatedContent() {
