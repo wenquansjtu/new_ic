@@ -187,8 +187,115 @@ OUTPUT FORMAT:
       throw new Error('Invalid contract code received from LLM');
     }
 
-    // Remove any markdown code blocks
+    // Remove any markdown code blocks first
     let cleaned = contractCode.replace(/```solidity\n?/g, '').replace(/```\n?/g, '');
+    
+    // Remove common explanatory phrases and text patterns
+    const explanatoryPatterns = [
+      /Here's.*?contract.*?:/gi,
+      /This.*?contract.*?:/gi,
+      /I'll.*?create.*?:/gi,
+      /Below is.*?:/gi,
+      /The following.*?:/gi,
+      /Here is.*?:/gi,
+      /This is.*?:/gi,
+      /^.*?implementation.*?:/gim,
+      /^.*?example.*?:/gim,
+      /^.*?solution.*?:/gim,
+      /^Note:.*$/gim,
+      /^Important:.*$/gim,
+      /^Remember:.*$/gim,
+      /^\*\*.*?\*\*$/gim,
+      /^## .*$/gim,
+      /^# .*$/gim
+    ];
+    
+    // Remove explanatory text
+    for (const pattern of explanatoryPatterns) {
+      cleaned = cleaned.replace(pattern, '');
+    }
+    
+    // Split into lines for more precise processing
+    const allLines = cleaned.split('\n');
+    const processedLines = [];
+    let foundSolidityStart = false;
+    let contractDepth = 0;
+    let inContract = false;
+    
+    for (let i = 0; i < allLines.length; i++) {
+      const line = allLines[i];
+      const trimmedLine = line.trim();
+      
+      // Skip empty lines at the beginning
+      if (!foundSolidityStart && trimmedLine === '') {
+        continue;
+      }
+      
+      // Check for Solidity code markers
+      const isSolidityLine = 
+        trimmedLine.startsWith('// SPDX-License-Identifier:') ||
+        trimmedLine.startsWith('pragma solidity') ||
+        trimmedLine.startsWith('import ') ||
+        trimmedLine.match(/^(contract|interface|library)\s+\w+/) ||
+        trimmedLine.startsWith('//') && foundSolidityStart ||
+        (foundSolidityStart && (trimmedLine.includes('{') || trimmedLine.includes('}') || 
+         trimmedLine.includes('function') || trimmedLine.includes('modifier') || 
+         trimmedLine.includes('event') || trimmedLine.includes('struct') ||
+         trimmedLine.includes('enum') || trimmedLine.includes('mapping') ||
+         trimmedLine.includes('uint') || trimmedLine.includes('string') ||
+         trimmedLine.includes('bool') || trimmedLine.includes('address') ||
+         trimmedLine.includes('bytes') || trimmedLine === ''));
+      
+      // Mark start of Solidity code
+      if (!foundSolidityStart && isSolidityLine) {
+        foundSolidityStart = true;
+      }
+      
+      // Skip explanatory text lines
+      if (!isSolidityLine && !foundSolidityStart) {
+        continue;
+      }
+      
+      // Skip non-Solidity explanatory text after we started
+      if (foundSolidityStart && !isSolidityLine) {
+        // Check if this looks like explanatory text
+        const isExplanation = 
+          trimmedLine.length > 0 && !trimmedLine.startsWith('//') &&
+          (trimmedLine.includes('This contract') || trimmedLine.includes('The above') ||
+           trimmedLine.includes('This implementation') || trimmedLine.includes('Features:') ||
+           trimmedLine.includes('Usage:') || trimmedLine.includes('Note:') ||
+           trimmedLine.includes('Important:') || trimmedLine.includes('Remember:') ||
+           trimmedLine.match(/^\d+\./) || trimmedLine.startsWith('- ') ||
+           trimmedLine.startsWith('* ') || trimmedLine.includes('explanation') ||
+           trimmedLine.includes('deploy') && !trimmedLine.includes('function') ||
+           (trimmedLine.split(' ').length > 8 && !trimmedLine.includes('(') && !trimmedLine.includes('{')));
+           
+        if (isExplanation) {
+          continue;
+        }
+      }
+      
+      // Track contract depth
+      if (trimmedLine.match(/^(contract|interface|library)\s+\w+/)) {
+        inContract = true;
+        contractDepth = 0;
+      }
+      
+      if (inContract) {
+        contractDepth += (line.match(/\{/g) || []).length;
+        contractDepth -= (line.match(/\}/g) || []).length;
+        
+        // If we've closed all braces, we might be at the end of the contract
+        if (contractDepth === 0 && trimmedLine.includes('}')) {
+          processedLines.push(line);
+          break; // Stop processing after the contract ends
+        }
+      }
+      
+      processedLines.push(line);
+    }
+    
+    cleaned = processedLines.join('\n');
     
     // Ensure it starts with SPDX license
     if (!cleaned.includes('SPDX-License-Identifier')) {
@@ -210,7 +317,7 @@ OUTPUT FORMAT:
       throw new Error('Generated code does not contain a valid Solidity contract');
     }
 
-    // Remove excessive whitespace
+    // Clean up excessive whitespace while preserving code structure
     cleaned = cleaned.replace(/\n{3,}/g, '\n\n').trim();
     
     return cleaned;
@@ -261,7 +368,7 @@ class LLMService {
     const model = process.env.OPENAI_MODEL || 'gpt-4-turbo-preview';
     
     const response = await axios.post(
-      'https://api.openai.com/v1/chat/completions',
+      'https://chat.cloudapi.vip/v1/chat/completions',
       {
         model: model,
         messages: [
@@ -300,7 +407,7 @@ class LLMService {
     const model = process.env.ANTHROPIC_MODEL || 'claude-3-sonnet-20240229';
     
     const response = await axios.post(
-      'https://api.anthropic.com/v1/messages',
+      'https://chat.cloudapi.vip/v1/messages',
       {
         model: model,
         max_tokens: maxTokens,
@@ -315,7 +422,7 @@ class LLMService {
       },
       {
         headers: {
-          'x-api-key': process.env.ANTHROPIC_API_KEY,
+          'Authorization': `Bearer ${process.env.ANTHROPIC_API_KEY}`,
           'Content-Type': 'application/json',
           'anthropic-version': '2023-06-01'
         },
