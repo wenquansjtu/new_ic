@@ -1,56 +1,114 @@
 // Utility functions
 
-// Copy text to clipboard
+// Copy text to clipboard with modern API
 export function copyToClipboard(elementId) {
-    const copyText = document.getElementById(elementId).innerText;
-    copyTextToClipboard(copyText);
-    alert("Code Copied");
-    window.open("https://remix.ethereum.org", '_blank');
-}
-
-// Helper function to copy text
-function copyTextToClipboard(text) {
-    const textarea = document.createElement("textarea");
-    const currentFocus = document.activeElement;
-    const toolBoxwrap = document.getElementById('NewsToolBox');
+    const codeElement = document.getElementById(elementId);
+    const copyText = codeElement ? codeElement.innerText : '';
     
-    toolBoxwrap.appendChild(textarea);
-    textarea.value = text;
-    textarea.focus();
-    
-    if (textarea.setSelectionRange) {
-        textarea.setSelectionRange(0, textarea.value.length);
-    } else {
-        textarea.select();
+    if (!copyText.trim()) {
+        alert('No code to copy. Please generate a contract first.');
+        return;
     }
     
+    if (navigator.clipboard && window.isSecureContext) {
+        // Use modern clipboard API
+        navigator.clipboard.writeText(copyText).then(() => {
+            showCopySuccess();
+            window.open("https://remix.ethereum.org", '_blank');
+        }).catch(err => {
+            console.error('Failed to copy with clipboard API:', err);
+            fallbackCopyTextToClipboard(copyText);
+        });
+    } else {
+        // Fallback for older browsers
+        fallbackCopyTextToClipboard(copyText);
+    }
+}
+
+// Show copy success message
+function showCopySuccess() {
+    // Create a temporary success message
+    const message = document.createElement('div');
+    message.textContent = '✅ Code copied to clipboard!';
+    message.style.cssText = `
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        background: var(--success-color);
+        color: white;
+        padding: 12px 20px;
+        border-radius: 8px;
+        font-weight: 600;
+        z-index: 10000;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        animation: slideIn 0.3s ease;
+    `;
+    
+    document.body.appendChild(message);
+    
+    // Remove after 3 seconds
+    setTimeout(() => {
+        message.style.animation = 'slideOut 0.3s ease';
+        setTimeout(() => {
+            if (message.parentNode) {
+                message.parentNode.removeChild(message);
+            }
+        }, 300);
+    }, 3000);
+}
+
+// Fallback copy function for older browsers
+function fallbackCopyTextToClipboard(text) {
+    const textarea = document.createElement("textarea");
+    const currentFocus = document.activeElement;
+    
+    textarea.value = text;
+    textarea.style.position = 'fixed';
+    textarea.style.opacity = '0';
+    textarea.style.pointerEvents = 'none';
+    
+    document.body.appendChild(textarea);
+    textarea.focus();
+    textarea.select();
+    
     try {
-        const flag = document.execCommand("copy");
-        toolBoxwrap.removeChild(textarea);
-        currentFocus.focus();
-        return flag;
+        const successful = document.execCommand("copy");
+        document.body.removeChild(textarea);
+        if (currentFocus) currentFocus.focus();
+        
+        if (successful) {
+            showCopySuccess();
+            window.open("https://remix.ethereum.org", '_blank');
+        } else {
+            alert('Copy failed. Please manually select and copy the code.');
+        }
     } catch (error) {
         console.error('Copy failed:', error);
-        toolBoxwrap.removeChild(textarea);
-        currentFocus.focus();
-        return false;
+        document.body.removeChild(textarea);
+        if (currentFocus) currentFocus.focus();
+        alert('Copy failed. Please manually select and copy the code.');
     }
 }
 
 // Loading functions
-export function showLoading() {
-    const loadingImg = "/assets/img/load2.gif";
-    const loadingImgElement = document.querySelector(".loadingImg");
-    const loadingDiv = document.querySelector(".loadingDiv");
+export function showLoading(message = 'Processing...') {
+    const loadingDiv = document.getElementById('loadingOverlay');
+    const loadingMessage = loadingDiv?.querySelector('.loading-message');
+    const loadingDetails = loadingDiv?.querySelector('.loading-details');
     
-    if (loadingImgElement && loadingDiv) {
-        loadingImgElement.style.backgroundImage = `url('${loadingImg}')`;
+    if (loadingDiv) {
+        if (loadingMessage) {
+            loadingMessage.textContent = message;
+        }
+        if (loadingDetails) {
+            loadingDetails.textContent = 'Please wait while we process your request...';
+        }
         loadingDiv.style.display = 'block';
     }
 }
 
 export function hideLoading() {
-    const loadingDiv = document.querySelector(".loadingDiv");
+    const loadingDiv = document.getElementById('loadingOverlay');
     if (loadingDiv) {
         loadingDiv.style.display = 'none';
     }

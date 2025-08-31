@@ -51,11 +51,15 @@ class IntelligentContractApp {
                 userAddress.textContent = authData.address;
                 generateBtn.textContent = 'Generate';
                 generateBtn.onclick = () => this.generateContract();
+            } else {
+                generateBtn.disabled = true;
+                generateBtn.textContent = 'Authentication Required';
             }
         } else {
             userInfo.style.display = 'none';
             loginContainer.style.display = 'block';
-            generateBtn.textContent = 'Generate';
+            generateBtn.disabled = false;
+            generateBtn.textContent = 'Generate Contract';
             generateBtn.onclick = () => this.handleAuthRequired();
         }
     }
@@ -279,21 +283,21 @@ class IntelligentContractApp {
         
         // Previous button
         if (currentPage > 1) {
-            paginationHTML += `<span onclick="app.changePage(${currentPage - 1})" style="cursor: pointer; margin: 0 5px; padding: 5px 10px; border: 1px solid #ccc;">Previous</span>`;
+            paginationHTML += `<span onclick="app.changePage(${currentPage - 1})" style="cursor: pointer; margin: 0 5px; padding: 5px 10px; border: 1px solid #ccc; border-radius: 0.75rem;">Previous</span>`;
         }
 
         // Page numbers
         for (let i = 1; i <= totalPages; i++) {
             if (i === currentPage) {
-                paginationHTML += `<span style="margin: 0 5px; padding: 5px 10px; border: 1px solid #ccc; background: #514f7f; color: white;">${i}</span>`;
+                paginationHTML += `<span style="margin: 0 5px; padding: 5px 10px; border: 1px solid #ccc; background: #514f7f; color: white; border-radius: 0.75rem;">${i}</span>`;
             } else {
-                paginationHTML += `<span onclick="app.changePage(${i})" style="cursor: pointer; margin: 0 5px; padding: 5px 10px; border: 1px solid #ccc;">${i}</span>`;
+                paginationHTML += `<span onclick="app.changePage(${i})" style="cursor: pointer; margin: 0 5px; padding: 5px 10px; border: 1px solid #ccc; border-radius: 0.75rem;">${i}</span>`;
             }
         }
 
         // Next button
         if (currentPage < totalPages) {
-            paginationHTML += `<span onclick="app.changePage(${currentPage + 1})" style="cursor: pointer; margin: 0 5px; padding: 5px 10px; border: 1px solid #ccc;">Next</span>`;
+            paginationHTML += `<span onclick="app.changePage(${currentPage + 1})" style="cursor: pointer; margin: 0 5px; padding: 5px 10px; border: 1px solid #ccc; border-radius: 0.75rem;">Next</span>`;
         }
 
         paginationContainer.innerHTML = paginationHTML;
